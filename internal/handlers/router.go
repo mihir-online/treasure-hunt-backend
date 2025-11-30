@@ -14,16 +14,16 @@ func NewRouter(treasureHandler *TreasureHandler) *mux.Router {
 	router.Use(CORSMiddleware)
 
 	// Health check endpoint
-	router.HandleFunc("/status", treasureHandler.GetStatus).Methods("GET")
+	router.HandleFunc("/status", treasureHandler.GetStatus).Methods("GET", "OPTIONS")
 
 	// API v1 routes
 	v1 := router.PathPrefix("/api/v1").Subrouter()
 
 	// QR Code endpoints
-	v1.HandleFunc("/qr-codes", treasureHandler.CreateQRCode).Methods("POST")
+	v1.HandleFunc("/qr-codes", treasureHandler.CreateQRCode).Methods("POST", "OPTIONS")
 
 	// Chest endpoints - Note: The actual path will be /treasure/claim from base URL
-	router.HandleFunc("/treasure/claim", treasureHandler.ClaimChest).Methods("POST")
+	router.HandleFunc("/treasure/claim", treasureHandler.ClaimChest).Methods("POST", "OPTIONS")
 
 	return router
 }
