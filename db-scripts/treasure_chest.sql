@@ -1,6 +1,9 @@
 -- Drop table if exists (optional, comment out in production)
 DROP TABLE IF EXISTS treasure_chest;
 
+-- Drop sequence if exists (optional, comment out in production)
+DROP SEQUENCE IF EXISTS qr_code_sequence;
+
 -- Create sequence for QR code numbering
 CREATE SEQUENCE qr_code_sequence START 1;
 

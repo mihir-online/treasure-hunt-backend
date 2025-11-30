@@ -7,7 +7,7 @@ CREATE TABLE treasure_owner (
     chest_id UUID NOT NULL UNIQUE,
     name VARCHAR(200) NOT NULL,
     email VARCHAR(320) NOT NULL,
-    phone_number NUMERIC NOT NULL,
+    phone_number VARCHAR(20) NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
