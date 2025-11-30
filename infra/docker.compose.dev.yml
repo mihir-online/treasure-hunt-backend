@@ -1,0 +1,42 @@
+# @format
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: treasure_dev_postgres
+    environment:
+      POSTGRES_USER: dev_pg_user
+      POSTGRES_PASSWORD: dev_pg_password
+      POSTGRES_DB: treasure_dev_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - treasure_postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  app:
+    build:
+      context: ..
+      dockerfile: Dockerfile.dev
+    container_name: treasure_dev_app
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=dev_pg_user
+      - DB_PASSWORD=dev_pg_password
+      - DB_NAME=treasure_dev_db
+      - SERVER_PORT=8008
+    ports:
+      - "8008:8008"
+    volumes:
+      - ../:/app # Mount the entire project for live development
+      - go-mod-cache:/go/pkg/mod # Cache Go modules
+    depends_on:
+      - postgres
+    restart: unless-stopped
+    # Override command if you want to use air or other tools
+    # command: ["air", "-c", ".air.toml"]
+
+volumes:
+  treasure_postgres_data:
+  go-mod-cache:
