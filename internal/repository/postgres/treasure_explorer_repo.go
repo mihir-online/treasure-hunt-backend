@@ -27,8 +27,8 @@ func (r *treasureExplorerRepository) Create(
 	explorer *models.TreasureExplorer,
 ) error {
 	query := `
-		INSERT INTO treasure_explorer (chest_id, name, email, phone_number)
-		VALUES ($1, $2, $3, $4)
+		INSERT INTO treasure_explorer (chest_id, player_id, score)
+		VALUES ($1, $2, $3)
 		RETURNING id, created_at
 	`
 
@@ -36,9 +36,8 @@ func (r *treasureExplorerRepository) Create(
 		ctx,
 		query,
 		explorer.ChestID,
-		explorer.Name,
-		explorer.Email,
-		explorer.PhoneNumber,
+		explorer.PlayerID,
+		explorer.Score,
 	).Scan(&explorer.ID, &explorer.CreatedAt)
 
 	if err != nil {
@@ -54,7 +53,7 @@ func (r *treasureExplorerRepository) GetByChestID(
 	chestID string,
 ) ([]*models.TreasureExplorer, error) {
 	query := `
-		SELECT id, chest_id, name, email, phone_number, created_at
+		SELECT id, chest_id, player_id, score, created_at
 		FROM treasure_explorer
 		WHERE chest_id = $1
 		ORDER BY created_at ASC
@@ -72,9 +71,8 @@ func (r *treasureExplorerRepository) GetByChestID(
 		err := rows.Scan(
 			&explorer.ID,
 			&explorer.ChestID,
-			&explorer.Name,
-			&explorer.Email,
-			&explorer.PhoneNumber,
+			&explorer.PlayerID,
+			&explorer.Score,
 			&explorer.CreatedAt,
 		)
 		if err != nil {

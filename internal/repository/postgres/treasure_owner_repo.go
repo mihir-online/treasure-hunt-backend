@@ -25,8 +25,8 @@ func NewTreasureOwnerRepository(db *sql.DB) repository.TreasureOwnerRepository {
 // Create creates a new owner entry (one owner per chest, unique constraint)
 func (r *treasureOwnerRepository) Create(ctx context.Context, owner *models.TreasureOwner) error {
 	query := `
-		INSERT INTO treasure_owner (chest_id, name, email, phone_number)
-		VALUES ($1, $2, $3, $4)
+		INSERT INTO treasure_owner (chest_id, player_id)
+		VALUES ($1, $2)
 		RETURNING id, created_at
 	`
 
@@ -34,9 +34,7 @@ func (r *treasureOwnerRepository) Create(ctx context.Context, owner *models.Trea
 		ctx,
 		query,
 		owner.ChestID,
-		owner.Name,
-		owner.Email,
-		owner.PhoneNumber,
+		owner.PlayerID,
 	).Scan(&owner.ID, &owner.CreatedAt)
 
 	if err != nil {
@@ -59,7 +57,7 @@ func (r *treasureOwnerRepository) GetByChestID(
 	chestID string,
 ) (*models.TreasureOwner, error) {
 	query := `
-		SELECT id, chest_id, name, email, phone_number, created_at
+		SELECT id, chest_id, player_id, created_at
 		FROM treasure_owner
 		WHERE chest_id = $1
 	`
@@ -68,9 +66,7 @@ func (r *treasureOwnerRepository) GetByChestID(
 	err := r.db.QueryRowContext(ctx, query, chestID).Scan(
 		&owner.ID,
 		&owner.ChestID,
-		&owner.Name,
-		&owner.Email,
-		&owner.PhoneNumber,
+		&owner.PlayerID,
 		&owner.CreatedAt,
 	)
 

@@ -38,12 +38,13 @@ func main() {
 	chestRepo := postgres.NewTreasureChestRepository(db)
 	explorerRepo := postgres.NewTreasureExplorerRepository(db)
 	ownerRepo := postgres.NewTreasureOwnerRepository(db)
+	playerRepo := postgres.NewPlayerRepository(db)
 
 	// Initialize QR code generator
 	qrGenerator := qrcode.NewGenerator(&cfg.QRCode)
 
 	// Initialize services
-	treasureService := service.NewTreasureService(chestRepo, explorerRepo, ownerRepo, qrGenerator)
+	treasureService := service.NewTreasureService(chestRepo, explorerRepo, ownerRepo, playerRepo, qrGenerator)
 
 	// Initialize handlers
 	treasureHandler := handlers.NewTreasureHandler(treasureService)

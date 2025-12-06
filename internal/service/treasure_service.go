@@ -32,6 +32,7 @@ type treasureService struct {
 	chestRepo    repository.TreasureChestRepository
 	explorerRepo repository.TreasureExplorerRepository
 	ownerRepo    repository.TreasureOwnerRepository
+	playerRepo   repository.PlayerRepository
 	qrGenerator  *qrcode.Generator
 }
 
@@ -40,12 +41,14 @@ func NewTreasureService(
 	chestRepo repository.TreasureChestRepository,
 	explorerRepo repository.TreasureExplorerRepository,
 	ownerRepo repository.TreasureOwnerRepository,
+	playerRepo repository.PlayerRepository,
 	qrGenerator *qrcode.Generator,
 ) TreasureService {
 	return &treasureService{
 		chestRepo:    chestRepo,
 		explorerRepo: explorerRepo,
 		ownerRepo:    ownerRepo,
+		playerRepo:   playerRepo,
 		qrGenerator:  qrGenerator,
 	}
 }
@@ -78,7 +81,7 @@ func (s *treasureService) CreateQRCode(
 		req.IsSecure,
 		req.CreatedBy,
 		"UNCLAIMED",
-	)
+	)   
 	if err != nil {
 		return nil, fmt.Errorf("failed to create treasure chests: %w", err)
 	}
@@ -163,55 +166,64 @@ func (s *treasureService) ClaimChest(
 		}
 	}
 
-	// Step 4: Insert into treasure_explorer table
+	// Step 4: Get or create player
+	player, err := s.playerRepo.GetOrCreate(ctx, req.Email, req.Name, req.Phone)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get or create player: %w", err)
+	}
+
+	// Step 5: Try to insert into treasure_owner table first
+	owner := &models.TreasureOwner{
+		ChestID:  req.ChestID,
+		PlayerID: player.ID,
+	}
+	
+	isFirstFinder := false
+	err = s.ownerRepo.Create(ctx, owner)
+	if err != nil {
+		// Check if it's a duplicate chest_id error
+		if !repository.IsDuplicateChestError(err) {
+			return nil, fmt.Errorf("failed to create owner entry: %w", err)
+		}
+		// Chest already has an owner, so this is a subsequent finder
+		isFirstFinder = false
+	} else {
+		// Successfully created owner, so this is the first finder
+		isFirstFinder = true
+		
+		// Mark chest as claimed
+		chest.Status = "CLAIMED"
+		err = s.chestRepo.Update(ctx, chest)
+		if err != nil {
+			return nil, fmt.Errorf("failed to update chest status: %w", err)
+		}
+	}
+
+	// Step 6: Determine score based on whether they are first finder or not
+	score := chest.SubsequentScore
+	if isFirstFinder {
+		score = chest.FirstScore
+	}
+
+	// Step 7: Insert into treasure_explorer table with appropriate score
 	explorer := &models.TreasureExplorer{
-		ChestID:     req.ChestID,
-		Name:        req.Name,
-		Email:       req.Email,
-		PhoneNumber: req.Phone,
+		ChestID:  req.ChestID,
+		PlayerID: player.ID,
+		Score:    score,
 	}
 	err = s.explorerRepo.Create(ctx, explorer)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create explorer entry: %w", err)
 	}
 
-	// Step 5: Check if already claimed
-	if chest.Status == "CLAIMED" {
-		return &models.ClaimChestResponse{
-			Success: false,
-			Message: "This chest already has an owner",
-		}, nil
-	}
-
-	// Step 6: Mark chest as claimed
-	chest.Status = "CLAIMED"
-	err = s.chestRepo.Update(ctx, chest)
-	if err != nil {
-		return nil, fmt.Errorf("failed to update chest status: %w", err)
-	}
-
-	// Step 7: Insert into treasure_owner table (may fail with duplicate constraint)
-	owner := &models.TreasureOwner{
-		ChestID:     req.ChestID,
-		Name:        req.Name,
-		Email:       req.Email,
-		PhoneNumber: req.Phone,
-	}
-	err = s.ownerRepo.Create(ctx, owner)
-	if err != nil {
-		// Check if it's a duplicate chest_id error (return 409 Conflict)
-		if repository.IsDuplicateChestError(err) {
-			return &models.ClaimChestResponse{
-				Success: false,
-				Message: "This chest already has an owner",
-			}, nil
-		}
-		return nil, fmt.Errorf("failed to create owner entry: %w", err)
+	message := "Chest claimed successfully!"
+	if !isFirstFinder {
+		message = "Chest explored! Someone else claimed it first."
 	}
 
 	return &models.ClaimChestResponse{
 		Success: true,
-		Message: "Chest claimed successfully!",
+		Message: message,
 		ChestID: chest.ID,
 		Status:  chest.Status,
 	}, nil

@@ -37,6 +37,8 @@ CREATE TABLE treasure_chest (
     qr_match VARCHAR(20) NOT NULL UNIQUE DEFAULT generate_qr_match(),
     is_secure BOOLEAN NOT NULL DEFAULT FALSE,
     status VARCHAR(20) NOT NULL DEFAULT 'UNCLAIMED',
+    first_score INTEGER NOT NULL DEFAULT 100,
+    subsequent_score INTEGER NOT NULL DEFAULT 50,
     created_by VARCHAR(200) NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -69,6 +71,8 @@ COMMENT ON COLUMN treasure_chest.source IS 'Source of the treasure chest';
 COMMENT ON COLUMN treasure_chest.qr_match IS 'QR code match identifier - auto-generated as {sequence}-{random_8_chars}';
 COMMENT ON COLUMN treasure_chest.is_secure IS 'Indicates if the treasure chest is secure';
 COMMENT ON COLUMN treasure_chest.status IS 'Current status of the treasure chest';
+COMMENT ON COLUMN treasure_chest.first_score IS 'Score awarded to the first finder (owner)';
+COMMENT ON COLUMN treasure_chest.subsequent_score IS 'Score awarded to subsequent finders (explorers)';
 COMMENT ON COLUMN treasure_chest.created_by IS 'User who created this record';
 COMMENT ON COLUMN treasure_chest.created_at IS 'Timestamp when record was created';
 COMMENT ON COLUMN treasure_chest.updated_at IS 'Timestamp when record was last updated';

@@ -57,3 +57,15 @@ type TreasureOwnerRepository interface {
 	// GetByChestID retrieves the owner for a specific chest
 	GetByChestID(ctx context.Context, chestID string) (*models.TreasureOwner, error)
 }
+
+// PlayerRepository defines the interface for player data operations
+type PlayerRepository interface {
+	// GetByEmail retrieves a player by email
+	GetByEmail(ctx context.Context, email string) (*models.Player, error)
+
+	// Create creates a new player
+	Create(ctx context.Context, player *models.Player) error
+
+	// GetOrCreate retrieves a player by email or creates one if it doesn't exist
+	GetOrCreate(ctx context.Context, email, name, phoneNumber string) (*models.Player, error)
+}
