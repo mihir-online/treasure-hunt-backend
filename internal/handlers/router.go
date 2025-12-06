@@ -25,5 +25,8 @@ func NewRouter(treasureHandler *TreasureHandler) *mux.Router {
 	// Chest endpoints - Note: The actual path will be /treasure/claim from base URL
 	router.HandleFunc("/treasure/claim", treasureHandler.ClaimChest).Methods("POST", "OPTIONS")
 
+	// Leaderboard endpoint
+	router.HandleFunc("/leaderboard", treasureHandler.GetLeaderboard).Methods("POST", "OPTIONS")
+
 	return router
 }

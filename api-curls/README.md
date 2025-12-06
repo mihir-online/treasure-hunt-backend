@@ -11,6 +11,7 @@ This directory contains shell scripts with curl commands for testing all API end
 | `01-health-check.sh`    | `GET /status`           | Health check and API status |
 | `02-create-qr-codes.sh` | `POST /api/v1/qr-codes` | Create QR codes in batch    |
 | `03-claim-chest.sh`     | `POST /treasure/claim`  | Claim treasure chests       |
+| `04-leaderboard.sh`     | `POST /leaderboard`     | Get player leaderboard      |
 
 ## 🚀 Usage
 
@@ -31,6 +32,9 @@ chmod +x api-curls/*.sh
 
 # Claim chest
 ./api-curls/03-claim-chest.sh
+
+# Get leaderboard
+./api-curls/04-leaderboard.sh
 ```
 
 ### Run All Scripts
@@ -96,6 +100,18 @@ Includes examples for:
 - 🌐 Production example
 
 **Important:** Replace `chest_id`, `source`, and `qr_match` with actual values from your database!
+
+### 04-leaderboard.sh
+
+Includes examples for:
+
+- ✅ Get top 10 players
+- ✅ Pagination (limit and offset)
+- ✅ Different sources
+- ❌ Invalid request (missing source)
+- ✅ Large limit (capped at 100)
+
+**Note:** Leaderboard shows aggregated scores from the `treasure_explorer` table grouped by player.
 
 ## 🔧 Customization
 
@@ -163,6 +179,22 @@ http://localhost:8008  # with your server URL
   "success": false,
   "message": "This chest already has an owner",
   "chest": {...}
+}
+```
+
+### Leaderboard (200 OK)
+
+```json
+{
+  "leaderboard": [
+    {
+      "name": "Alice Johnson",
+      "rank": 1,
+      "points": 500
+    }
+  ],
+  "total": 25,
+  "source": "test"
 }
 ```
 
@@ -241,8 +273,6 @@ curl -X GET http://localhost:8008/status \
 
 ## 📚 Additional Resources
 
-- [API Documentation](../README.md)
-- [Claim Chest API Guide](../CLAIM_CHEST_API.md)
 - [QR Code Creation Guide](../QR_CODE_GENERATION.md)
 
 ## ⚠️ Important Notes

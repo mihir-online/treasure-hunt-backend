@@ -25,6 +25,12 @@ type TreasureService interface {
 
 	// GetChestByID retrieves a chest by its ID
 	GetChestByID(ctx context.Context, chestID string) (*models.TreasureChest, error)
+
+	// GetLeaderboard retrieves the leaderboard for a specific source
+	GetLeaderboard(
+		ctx context.Context,
+		req *models.LeaderboardRequest,
+	) (*models.LeaderboardResponse, error)
 }
 
 // treasureService implements the TreasureService interface
@@ -176,6 +182,7 @@ func (s *treasureService) ClaimChest(
 	owner := &models.TreasureOwner{
 		ChestID:  req.ChestID,
 		PlayerID: player.ID,
+		Source:   req.Source,
 	}
 	
 	isFirstFinder := false
@@ -210,6 +217,7 @@ func (s *treasureService) ClaimChest(
 		ChestID:  req.ChestID,
 		PlayerID: player.ID,
 		Score:    score,
+		Source:   req.Source,
 	}
 	err = s.explorerRepo.Create(ctx, explorer)
 	if err != nil {
@@ -235,4 +243,22 @@ func (s *treasureService) GetChestByID(
 	chestID string,
 ) (*models.TreasureChest, error) {
 	return s.chestRepo.GetByID(ctx, chestID)
+}
+
+// GetLeaderboard retrieves the leaderboard for a specific source
+func (s *treasureService) GetLeaderboard(
+	ctx context.Context,
+	req *models.LeaderboardRequest,
+) (*models.LeaderboardResponse, error) {
+	// Get leaderboard entries from repository
+	entries, total, err := s.explorerRepo.GetLeaderboard(ctx, req.Source, req.Limit, req.Offset)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get leaderboard: %w", err)
+	}
+
+	return &models.LeaderboardResponse{
+		Leaderboard: entries,
+		Total:       total,
+		Source:      req.Source,
+	}, nil
 }

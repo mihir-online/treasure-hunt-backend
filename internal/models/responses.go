@@ -38,3 +38,17 @@ type ErrorResponse struct {
 	Error   string `json:"error"`
 	Code    string `json:"code,omitempty"`
 }
+
+// LeaderboardEntry represents a single entry in the leaderboard
+type LeaderboardEntry struct {
+	Name   string `json:"name"`   // Player's name
+	Rank   int    `json:"rank"`   // Player's rank (1-indexed)
+	Points int    `json:"points"` // Total points earned
+}
+
+// LeaderboardResponse represents the response for leaderboard request
+type LeaderboardResponse struct {
+	Leaderboard []LeaderboardEntry `json:"leaderboard"` // List of leaderboard entries
+	Total       int                `json:"total"`       // Total number of players in this source
+	Source      string             `json:"source"`      // Source/category of the treasure hunt
+}

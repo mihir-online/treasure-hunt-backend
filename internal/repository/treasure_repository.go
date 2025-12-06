@@ -47,6 +47,9 @@ type TreasureExplorerRepository interface {
 
 	// GetByChestID retrieves all explorers for a specific chest
 	GetByChestID(ctx context.Context, chestID string) ([]*models.TreasureExplorer, error)
+
+	// GetLeaderboard retrieves the leaderboard for a specific source
+	GetLeaderboard(ctx context.Context, source string, limit, offset int) ([]models.LeaderboardEntry, int, error)
 }
 
 // TreasureOwnerRepository defines the interface for owner data operations

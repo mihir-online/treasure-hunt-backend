@@ -16,6 +16,8 @@ curl -X POST http://localhost:8008/api/v1/qr-codes \
     "count": 5,
     "source": "Park Bench #42",
     "is_secure": false,
+    "first_score": 100,
+    "subsequent_score": 50,
     "created_by": "alice@example.com"
   }'
 
@@ -31,6 +33,8 @@ curl -X POST http://localhost:8008/api/v1/qr-codes \
     "count": 3,
     "source": "Museum Exhibit A",
     "is_secure": true,
+    "first_score": 100,
+    "subsequent_score": 50,
     "created_by": "curator@museum.com"
   }'
 
@@ -46,6 +50,8 @@ curl -X POST http://localhost:8008/api/v1/qr-codes \
     "count": 50,
     "source": "City Scavenger Hunt 2025",
     "is_secure": true,
+    "first_score": 100,
+    "subsequent_score": 50,
     "created_by": "event@cityhunt.com"
   }'
 
@@ -61,6 +67,8 @@ curl -X POST http://localhost:8008/api/v1/qr-codes \
     "count": 3,
     "source": "Park Bench #42",
     "is_secure": false,
+    "first_score": 100,
+    "subsequent_score": 50,
     "created_by": "alice@example.com"
   }'
 
@@ -76,6 +84,8 @@ curl -X POST https://svc.mihir.page/api/v1/qr-codes \
     "count": 10,
     "source": "Production Test Event",
     "is_secure": true,
+    "first_score": 100,
+    "subsequent_score": 50,
     "created_by": "admin@mihir.page"
   }'
 

@@ -22,6 +22,7 @@ type TreasureExplorer struct {
 	ChestID   string    `json:"chest_id"   db:"chest_id"`   // UUID reference to chest
 	PlayerID  int       `json:"player_id"  db:"player_id"`  // Reference to player
 	Score     int       `json:"score"      db:"score"`      // Score earned for this chest
+	Source    string    `json:"source"     db:"source"`     // Source/category of the treasure hunt
 	CreatedAt time.Time `json:"created_at" db:"created_at"`
 }
 
@@ -30,6 +31,7 @@ type TreasureOwner struct {
 	ID        int       `json:"id"         db:"id"`         // Serial primary key
 	ChestID   string    `json:"chest_id"   db:"chest_id"`   // UUID reference to chest (UNIQUE)
 	PlayerID  int       `json:"player_id"  db:"player_id"`  // Reference to player
+	Source    string    `json:"source"     db:"source"`     // Source/category of the treasure hunt
 	CreatedAt time.Time `json:"created_at" db:"created_at"`
 }
 

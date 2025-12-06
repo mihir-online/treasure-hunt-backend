@@ -27,8 +27,8 @@ func (r *treasureExplorerRepository) Create(
 	explorer *models.TreasureExplorer,
 ) error {
 	query := `
-		INSERT INTO treasure_explorer (chest_id, player_id, score)
-		VALUES ($1, $2, $3)
+		INSERT INTO treasure_explorer (chest_id, player_id, score, source)
+		VALUES ($1, $2, $3, $4)
 		RETURNING id, created_at
 	`
 
@@ -38,6 +38,7 @@ func (r *treasureExplorerRepository) Create(
 		explorer.ChestID,
 		explorer.PlayerID,
 		explorer.Score,
+		explorer.Source,
 	).Scan(&explorer.ID, &explorer.CreatedAt)
 
 	if err != nil {
@@ -53,7 +54,7 @@ func (r *treasureExplorerRepository) GetByChestID(
 	chestID string,
 ) ([]*models.TreasureExplorer, error) {
 	query := `
-		SELECT id, chest_id, player_id, score, created_at
+		SELECT id, chest_id, player_id, score, source, created_at
 		FROM treasure_explorer
 		WHERE chest_id = $1
 		ORDER BY created_at ASC
@@ -73,6 +74,7 @@ func (r *treasureExplorerRepository) GetByChestID(
 			&explorer.ChestID,
 			&explorer.PlayerID,
 			&explorer.Score,
+			&explorer.Source,
 			&explorer.CreatedAt,
 		)
 		if err != nil {
@@ -86,4 +88,74 @@ func (r *treasureExplorerRepository) GetByChestID(
 	}
 
 	return explorers, nil
+}
+
+// GetLeaderboard retrieves the leaderboard for a specific source
+// Returns leaderboard entries with rank, name, and total points
+func (r *treasureExplorerRepository) GetLeaderboard(
+	ctx context.Context,
+	source string,
+	limit, offset int,
+) ([]models.LeaderboardEntry, int, error) {
+	// First, get total count of players for this source
+	countQuery := `
+		SELECT COUNT(DISTINCT player_id)
+		FROM treasure_explorer
+		WHERE source = $1
+	`
+
+	var total int
+	err := r.db.QueryRowContext(ctx, countQuery, source).Scan(&total)
+	if err != nil {
+		return nil, 0, fmt.Errorf("failed to count players: %w", err)
+	}
+
+	// Optimized leaderboard query (no window function)
+	// Tiebreaker: MAX(created_at) DESC - later time means slower, ranks lower
+	query := `
+		SELECT 
+			p.name,
+			SUM(te.score) as total_points,
+			MAX(te.created_at) as latest_time
+		FROM treasure_explorer te
+		JOIN players p ON te.player_id = p.id
+		WHERE te.source = $1
+		GROUP BY te.player_id, p.name
+		ORDER BY total_points DESC, latest_time DESC
+		LIMIT $2 OFFSET $3
+	`
+
+	rows, err := r.db.QueryContext(ctx, query, source, limit, offset)
+	if err != nil {
+		return nil, 0, fmt.Errorf("failed to get leaderboard: %w", err)
+	}
+	defer rows.Close()
+
+	var entries []models.LeaderboardEntry
+	rank := offset + 1 // Calculate rank from offset + position
+
+	for rows.Next() {
+		var entry models.LeaderboardEntry
+		var latestTime string // We scan but don't return it
+
+		err := rows.Scan(
+			&entry.Name,
+			&entry.Points,
+			&latestTime,
+		)
+		if err != nil {
+			return nil, 0, fmt.Errorf("failed to scan leaderboard entry: %w", err)
+		}
+
+		entry.Rank = rank
+		rank++
+
+		entries = append(entries, entry)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, 0, fmt.Errorf("error iterating leaderboard rows: %w", err)
+	}
+
+	return entries, total, nil
 }

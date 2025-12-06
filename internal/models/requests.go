@@ -17,3 +17,10 @@ type ClaimChestRequest struct {
 	Email   string `json:"email"    validate:"required"` // Claimer's email
 	Phone   string `json:"phone"    validate:"required"` // Claimer's phone
 }
+
+// LeaderboardRequest represents the request to fetch leaderboard
+type LeaderboardRequest struct {
+	Source string `json:"source" validate:"required"` // Source/category of the treasure hunt
+	Limit  int    `json:"limit"  validate:"required,min=1,max=100"` // Number of entries to return
+	Offset int    `json:"offset" validate:"min=0"`    // Offset for pagination
+}

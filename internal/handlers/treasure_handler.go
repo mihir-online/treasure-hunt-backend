@@ -108,3 +108,33 @@ func (h *TreasureHandler) sendConflict(w http.ResponseWriter, message string) {
 		Message: message,
 	})
 }
+
+// GetLeaderboard handles the POST /leaderboard endpoint
+func (h *TreasureHandler) GetLeaderboard(w http.ResponseWriter, r *http.Request) {
+	var req models.LeaderboardRequest
+
+	// Decode request body
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		h.sendError(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	// Set default values if not provided
+	if req.Limit == 0 {
+		req.Limit = 10
+	}
+	if req.Limit > 100 {
+		req.Limit = 100
+	}
+
+	// Call service layer
+	response, err := h.service.GetLeaderboard(r.Context(), &req)
+	if err != nil {
+		h.sendError(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(response)
+}
