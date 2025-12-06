@@ -21,11 +21,11 @@ func IsDuplicateChestError(err error) bool {
 // chest)
 type DuplicateExplorerError struct {
 	ChestID  string
-	PlayerID int
+	PlayerID string
 }
 
 func (e *DuplicateExplorerError) Error() string {
-	return fmt.Sprintf("player %d has already explored chest %s", e.PlayerID, e.ChestID)
+	return fmt.Sprintf("player %s has already explored chest %s", e.PlayerID, e.ChestID)
 }
 
 // IsDuplicateExplorerError checks if an error is a DuplicateExplorerError

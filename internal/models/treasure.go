@@ -20,7 +20,7 @@ type TreasureChest struct {
 type TreasureExplorer struct {
 	ID        int       `json:"id"         db:"id"`        // Serial primary key
 	ChestID   string    `json:"chest_id"   db:"chest_id"`  // UUID reference to chest
-	PlayerID  int       `json:"player_id"  db:"player_id"` // Reference to player
+	PlayerID  string    `json:"player_id"  db:"player_id"` // UUID reference to player
 	Score     int       `json:"score"      db:"score"`     // Score earned for this chest
 	Source    string    `json:"source"     db:"source"`    // Source/category of the treasure hunt
 	CreatedAt time.Time `json:"created_at" db:"created_at"`
@@ -30,14 +30,14 @@ type TreasureExplorer struct {
 type TreasureOwner struct {
 	ID        int       `json:"id"         db:"id"`        // Serial primary key
 	ChestID   string    `json:"chest_id"   db:"chest_id"`  // UUID reference to chest (UNIQUE)
-	PlayerID  int       `json:"player_id"  db:"player_id"` // Reference to player
+	PlayerID  string    `json:"player_id"  db:"player_id"` // UUID reference to player
 	Source    string    `json:"source"     db:"source"`    // Source/category of the treasure hunt
 	CreatedAt time.Time `json:"created_at" db:"created_at"`
 }
 
 // Player represents a player in the system
 type Player struct {
-	ID          int       `json:"id"           db:"id"`           // Serial primary key
+	ID          string    `json:"id"           db:"id"`           // UUID primary key
 	Email       string    `json:"email"        db:"email"`        // Player email (unique)
 	Name        string    `json:"name"         db:"name"`         // Player name
 	PhoneNumber string    `json:"phone_number" db:"phone_number"` // Player phone

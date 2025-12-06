@@ -3,7 +3,7 @@ DROP TABLE IF EXISTS players;
 
 -- Create players table
 CREATE TABLE players (
-    id SERIAL PRIMARY KEY,
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     email VARCHAR(320) NOT NULL UNIQUE,
     name VARCHAR(200) NOT NULL,
     phone_number VARCHAR(20) NOT NULL,
@@ -12,7 +12,7 @@ CREATE TABLE players (
 
 -- Add comments for documentation
 COMMENT ON TABLE players IS 'Stores player information for the treasure hunt application';
-COMMENT ON COLUMN players.id IS 'Serial primary key identifier';
+COMMENT ON COLUMN players.id IS 'UUID primary key identifier';
 COMMENT ON COLUMN players.email IS 'Player email address (unique)';
 COMMENT ON COLUMN players.name IS 'Player name';
 COMMENT ON COLUMN players.phone_number IS 'Player phone number';
