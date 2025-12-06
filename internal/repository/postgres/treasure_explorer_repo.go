@@ -126,12 +126,13 @@ func (r *treasureExplorerRepository) GetLeaderboard(
 	query := `
 		SELECT 
 			p.name,
+			p.email,
 			SUM(te.score) as total_points,
 			MAX(te.created_at) as latest_time
 		FROM treasure_explorer te
 		JOIN players p ON te.player_id = p.id
 		WHERE te.source = $1
-		GROUP BY te.player_id, p.name
+		GROUP BY te.player_id, p.name, p.email
 		ORDER BY total_points DESC, latest_time DESC
 		LIMIT $2 OFFSET $3
 	`
@@ -151,6 +152,7 @@ func (r *treasureExplorerRepository) GetLeaderboard(
 
 		err := rows.Scan(
 			&entry.Name,
+			&entry.Email,
 			&entry.Points,
 			&latestTime,
 		)

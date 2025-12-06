@@ -79,12 +79,22 @@ func (s *treasureService) CreateQRCode(
 		}, nil
 	}
 
-	// Step 2: Insert the specified count of rows in the chest table
+	// Step 2: Set default scores if not provided
+	firstScore := req.FirstScore
+	if firstScore == 0 {
+		firstScore = 100 // Default first finder score
+	}
+	subsequentScore := req.SubsequentScore
+	// Note: subsequent score can be 0, so no default needed
+
+	// Step 3: Insert the specified count of rows in the chest table
 	chests, err := s.chestRepo.CreateBatch(
 		ctx,
 		req.Count,
 		req.Source,
 		req.IsSecure,
+		firstScore,
+		subsequentScore,
 		req.CreatedBy,
 		"UNCLAIMED",
 	)
@@ -92,12 +102,12 @@ func (s *treasureService) CreateQRCode(
 		return nil, fmt.Errorf("failed to create treasure chests: %w", err)
 	}
 
-	// Step 3: Verify count
+	// Step 4: Verify count
 	if len(chests) != req.Count {
 		return nil, fmt.Errorf("expected %d chests but created %d", req.Count, len(chests))
 	}
 
-	// Step 4: Generate URLs and QR codes
+	// Step 5: Generate URLs and QR codes
 	chestInfos := make([]qrcode.ChestInfo, len(chests))
 	for i, chest := range chests {
 		chestInfos[i] = qrcode.ChestInfo{
@@ -108,13 +118,13 @@ func (s *treasureService) CreateQRCode(
 		}
 	}
 
-	// Step 5: Generate QR code images
+	// Step 6: Generate QR code images
 	qrResults, err := s.qrGenerator.GenerateBatch(chestInfos)
 	if err != nil {
 		return nil, fmt.Errorf("failed to generate QR codes: %w", err)
 	}
 
-	// Step 6: Build response
+	// Step 7: Build response
 	qrCodes := make([]models.QRCodeInfo, len(qrResults))
 	for i, result := range qrResults {
 		qrCodes[i] = models.QRCodeInfo{

@@ -2,10 +2,12 @@ package models
 
 // CreateQRCodeRequest represents the request to create a new QR code
 type CreateQRCodeRequest struct {
-	Count     int    `json:"count"      validate:"required,min=1,max=100"` // Number of QR codes to generate
-	Source    string `json:"source"     validate:"required"`               // Source of the treasure chest (must be unique)
-	IsSecure  bool   `json:"is_secure"`                                    // Whether the chest is secure (default: false)
-	CreatedBy string `json:"created_by" validate:"required"`               // Username or ID of creator
+	Count           int    `json:"count"            validate:"required,min=1,max=100"` // Number of QR codes to generate
+	Source          string `json:"source"           validate:"required"`               // Source of the treasure chest (must be unique)
+	IsSecure        bool   `json:"is_secure"`                                          // Whether the chest is secure (default: false)
+	FirstScore      int    `json:"first_score"      validate:"min=0"`                  // Score for first finder (default: 100)
+	SubsequentScore int    `json:"subsequent_score" validate:"min=0"`                  // Score for subsequent finders (default: 0)
+	CreatedBy       string `json:"created_by"       validate:"required"`               // Username or ID of creator
 }
 
 // ClaimChestRequest represents the request to claim a chest

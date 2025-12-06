@@ -53,6 +53,8 @@ func (r *treasureChestRepository) CreateBatch(
 	count int,
 	source string,
 	isSecure bool,
+	firstScore int,
+	subsequentScore int,
 	createdBy string,
 	status string,
 ) ([]*models.TreasureChest, error) {
@@ -64,8 +66,8 @@ func (r *treasureChestRepository) CreateBatch(
 	defer tx.Rollback()
 
 	query := `
-		INSERT INTO treasure_chest (source, is_secure, status, created_by)
-		VALUES ($1, $2, $3, $4)
+		INSERT INTO treasure_chest (source, is_secure, status, first_score, subsequent_score, created_by)
+		VALUES ($1, $2, $3, $4, $5, $6)
 		RETURNING id, qr_match, source, is_secure, status, first_score, subsequent_score, created_by, created_at, updated_at
 	`
 
@@ -78,6 +80,8 @@ func (r *treasureChestRepository) CreateBatch(
 			source,
 			isSecure,
 			status,
+			firstScore,
+			subsequentScore,
 			createdBy,
 		).Scan(
 			&chest.ID,

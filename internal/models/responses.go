@@ -43,6 +43,7 @@ type ErrorResponse struct {
 // LeaderboardEntry represents a single entry in the leaderboard
 type LeaderboardEntry struct {
 	Name   string `json:"name"`   // Player's name
+	Email  string `json:"email"`  // Player's email
 	Rank   int    `json:"rank"`   // Player's rank (1-indexed)
 	Points int    `json:"points"` // Total points earned
 }

@@ -17,6 +17,8 @@ type TreasureChestRepository interface {
 		count int,
 		source string,
 		isSecure bool,
+		firstScore int,
+		subsequentScore int,
 		createdBy string,
 		status string,
 	) ([]*models.TreasureChest, error)
