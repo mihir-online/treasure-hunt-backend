@@ -30,6 +30,7 @@ type ClaimChestResponse struct {
 	Message string `json:"message"`
 	ChestID string `json:"chest_id,omitempty"`
 	Status  string `json:"status,omitempty"`
+	Score   int    `json:"score,omitempty"`
 }
 
 // ErrorResponse represents an error response

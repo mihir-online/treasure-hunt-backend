@@ -14,9 +14,6 @@ CREATE TABLE treasure_explorer (
 
 -- Create indexes on commonly queried columns
 CREATE INDEX idx_treasure_explorer_chest_id ON treasure_explorer(chest_id);
-CREATE INDEX idx_treasure_explorer_player_id ON treasure_explorer(player_id);
-CREATE INDEX idx_treasure_explorer_source ON treasure_explorer(source);
-CREATE INDEX idx_treasure_explorer_created_at ON treasure_explorer(created_at);
 
 -- Composite index for optimized leaderboard queries
 -- Covers: source filter, player_id grouping, score & created_at aggregation

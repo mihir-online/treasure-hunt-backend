@@ -10,10 +10,6 @@ CREATE TABLE players (
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
--- Create indexes on commonly queried columns
-CREATE INDEX idx_players_email ON players(email);
-CREATE INDEX idx_players_id ON players(id);
-
 -- Add comments for documentation
 COMMENT ON TABLE players IS 'Stores player information for the treasure hunt application';
 COMMENT ON COLUMN players.id IS 'Serial primary key identifier';

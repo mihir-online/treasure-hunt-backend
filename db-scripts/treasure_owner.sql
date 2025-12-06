@@ -10,11 +10,6 @@ CREATE TABLE treasure_owner (
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
--- Create indexes on commonly queried columns
-CREATE INDEX idx_treasure_owner_chest_id ON treasure_owner(chest_id);
-CREATE INDEX idx_treasure_owner_player_id ON treasure_owner(player_id);
-CREATE INDEX idx_treasure_owner_source ON treasure_owner(source);
-CREATE INDEX idx_treasure_owner_created_at ON treasure_owner(created_at);
 
 -- Add comments for documentation
 COMMENT ON TABLE treasure_owner IS 'Stores owner information for treasure chests';

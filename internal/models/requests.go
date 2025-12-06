@@ -20,7 +20,7 @@ type ClaimChestRequest struct {
 
 // LeaderboardRequest represents the request to fetch leaderboard
 type LeaderboardRequest struct {
-	Source string `json:"source" validate:"required"` // Source/category of the treasure hunt
+	Source string `json:"source" validate:"required"`               // Source/category of the treasure hunt
 	Limit  int    `json:"limit"  validate:"required,min=1,max=100"` // Number of entries to return
-	Offset int    `json:"offset" validate:"min=0"`    // Offset for pagination
+	Offset int    `json:"offset" validate:"min=0"`                  // Offset for pagination
 }

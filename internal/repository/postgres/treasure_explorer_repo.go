@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 
+	"github.com/lib/pq"
 	"github.com/mihir/treasure-hunt-backend/internal/models"
 	"github.com/mihir/treasure-hunt-backend/internal/repository"
 )
@@ -42,6 +43,16 @@ func (r *treasureExplorerRepository) Create(
 	).Scan(&explorer.ID, &explorer.CreatedAt)
 
 	if err != nil {
+		// Check for unique constraint violation on (chest_id, player_id)
+		if pqErr, ok := err.(*pq.Error); ok {
+			// PostgreSQL error code 23505 is unique_violation
+			if pqErr.Code == "23505" {
+				return &repository.DuplicateExplorerError{
+					ChestID:  explorer.ChestID,
+					PlayerID: explorer.PlayerID,
+				}
+			}
+		}
 		return fmt.Errorf("failed to create treasure explorer: %w", err)
 	}
 

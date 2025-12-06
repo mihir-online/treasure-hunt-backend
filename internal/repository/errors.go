@@ -16,3 +16,20 @@ func IsDuplicateChestError(err error) bool {
 	_, ok := err.(*DuplicateChestError)
 	return ok
 }
+
+// DuplicateExplorerError represents a duplicate explorer entry error (player already explored this
+// chest)
+type DuplicateExplorerError struct {
+	ChestID  string
+	PlayerID int
+}
+
+func (e *DuplicateExplorerError) Error() string {
+	return fmt.Sprintf("player %d has already explored chest %s", e.PlayerID, e.ChestID)
+}
+
+// IsDuplicateExplorerError checks if an error is a DuplicateExplorerError
+func IsDuplicateExplorerError(err error) bool {
+	_, ok := err.(*DuplicateExplorerError)
+	return ok
+}

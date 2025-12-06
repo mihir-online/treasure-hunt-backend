@@ -87,7 +87,7 @@ func (s *treasureService) CreateQRCode(
 		req.IsSecure,
 		req.CreatedBy,
 		"UNCLAIMED",
-	)   
+	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create treasure chests: %w", err)
 	}
@@ -184,7 +184,7 @@ func (s *treasureService) ClaimChest(
 		PlayerID: player.ID,
 		Source:   req.Source,
 	}
-	
+
 	isFirstFinder := false
 	err = s.ownerRepo.Create(ctx, owner)
 	if err != nil {
@@ -197,7 +197,7 @@ func (s *treasureService) ClaimChest(
 	} else {
 		// Successfully created owner, so this is the first finder
 		isFirstFinder = true
-		
+
 		// Mark chest as claimed
 		chest.Status = "CLAIMED"
 		err = s.chestRepo.Update(ctx, chest)
@@ -221,6 +221,13 @@ func (s *treasureService) ClaimChest(
 	}
 	err = s.explorerRepo.Create(ctx, explorer)
 	if err != nil {
+		// Check if player already explored this chest
+		if repository.IsDuplicateExplorerError(err) {
+			return &models.ClaimChestResponse{
+				Success: false,
+				Message: "You have already explored this chest",
+			}, nil
+		}
 		return nil, fmt.Errorf("failed to create explorer entry: %w", err)
 	}
 
@@ -234,6 +241,7 @@ func (s *treasureService) ClaimChest(
 		Message: message,
 		ChestID: chest.ID,
 		Status:  chest.Status,
+		Score:   score,
 	}, nil
 }
 

@@ -44,10 +44,8 @@ CREATE TABLE treasure_chest (
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
--- Create index on commonly queried columns
-CREATE INDEX idx_treasure_chest_qr_match ON treasure_chest(qr_match);
+-- Create indexes on commonly queried columns
 CREATE INDEX idx_treasure_chest_status ON treasure_chest(status);
-CREATE INDEX idx_treasure_chest_created_at ON treasure_chest(created_at);
 
 -- Create updated_at trigger function
 CREATE OR REPLACE FUNCTION update_updated_at_column()

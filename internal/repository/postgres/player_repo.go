@@ -73,7 +73,10 @@ func (r *playerRepository) Create(ctx context.Context, player *models.Player) er
 
 // GetOrCreate retrieves a player by email or creates one if it doesn't exist
 // Uses INSERT ... ON CONFLICT for atomic upsert to handle concurrent requests
-func (r *playerRepository) GetOrCreate(ctx context.Context, email, name, phoneNumber string) (*models.Player, error) {
+func (r *playerRepository) GetOrCreate(
+	ctx context.Context,
+	email, name, phoneNumber string,
+) (*models.Player, error) {
 	// Use INSERT ... ON CONFLICT for atomic upsert
 	// This handles the race condition where multiple concurrent requests
 	// try to create the same player
@@ -107,5 +110,3 @@ func (r *playerRepository) GetOrCreate(ctx context.Context, email, name, phoneNu
 
 	return player, nil
 }
-
-

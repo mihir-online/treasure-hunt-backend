@@ -40,6 +40,7 @@ dev_infra:
 # Create database tables
 tables:
 	@echo "Creating database tables..."
+	docker exec -i treasure_dev_postgres psql -U dev_pg_user -d treasure_dev_db < db-scripts/players.sql
 	docker exec -i treasure_dev_postgres psql -U dev_pg_user -d treasure_dev_db < db-scripts/treasure_chest.sql
 	docker exec -i treasure_dev_postgres psql -U dev_pg_user -d treasure_dev_db < db-scripts/treasure_owner.sql
 	docker exec -i treasure_dev_postgres psql -U dev_pg_user -d treasure_dev_db < db-scripts/treasure_explorer.sql

@@ -44,7 +44,13 @@ func main() {
 	qrGenerator := qrcode.NewGenerator(&cfg.QRCode)
 
 	// Initialize services
-	treasureService := service.NewTreasureService(chestRepo, explorerRepo, ownerRepo, playerRepo, qrGenerator)
+	treasureService := service.NewTreasureService(
+		chestRepo,
+		explorerRepo,
+		ownerRepo,
+		playerRepo,
+		qrGenerator,
+	)
 
 	// Initialize handlers
 	treasureHandler := handlers.NewTreasureHandler(treasureService)
